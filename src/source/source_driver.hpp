@@ -216,6 +216,16 @@ inline void SourceDriver::putPacket(const Packet& msg)
 
 void SourceDriver::putPointCloud(std::shared_ptr<LidarPointCloudMsg> msg)
 {
+  if (src_type_ == SourceType::MSG_FROM_LIDAR)
+  {
+    // The decoder is the sole producer. Keep only the newest waiting live frame
+    // when publication falls behind, and return superseded buffers to the pool.
+    auto superseded = point_cloud_queue_.pop();
+    if (superseded)
+    {
+      free_point_cloud_queue_.push(superseded);
+    }
+  }
   point_cloud_queue_.push(msg);
 }
 #ifdef ENABLE_IMU_DATA_PARSE

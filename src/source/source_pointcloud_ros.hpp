@@ -473,7 +473,8 @@ inline void DestinationPointCloudRos::init(const YAML::Node& config)
 
   node_ptr_.reset(new rclcpp::Node(node_name.str()));
 
-  pub_ = node_ptr_->create_publisher<sensor_msgs::msg::PointCloud2>(ros_send_topic, ros_queue_length);
+  pub_ = node_ptr_->create_publisher<sensor_msgs::msg::PointCloud2>(
+      ros_send_topic, rclcpp::QoS(ros_queue_length).best_effort());
 
 #ifdef ENABLE_IMU_DATA_PARSE
   std::string ros_send_imu_data_topic;
